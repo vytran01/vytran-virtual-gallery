@@ -25,7 +25,7 @@ knitr::opts_chunk$set(echo = FALSE)
 
 ```
 
-![](infographic.pptx.pdf)
+![](infographic.pptx-1.png)
 
 
 

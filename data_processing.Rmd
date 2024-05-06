@@ -1,7 +1,7 @@
 ---
 title: "Soccer Data"
 description: |
- One of the 
+ For the final project, I will be working on a data set about Shooting statistics of all players in the English Premier Leage to investigate which factors affecting the scoring ability and strength of a team
 ---
 
 ```{r setup, include=FALSE}
