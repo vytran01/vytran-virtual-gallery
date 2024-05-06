@@ -1,0 +1,6 @@
+"0","complete_data_SoT = data[!is.na(data$SoT.), ]"
+"0",""
+"0","ggplot() +"
+"0","  geom_histogram(aes(x =complete_data_SoT$SoT., y = after_stat(density)), bins = 30, fill='red', alpha=0.7) +  "
+"0","  geom_density(aes(x =complete_data_SoT$SoT.)) +"
+"0","  labs(x = ""Quantitative Variable"", y = ""Density"", title = ""Distribution of Short Accuracy"")"

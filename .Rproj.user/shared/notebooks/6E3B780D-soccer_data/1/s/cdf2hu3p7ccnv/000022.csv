@@ -1,0 +1,2 @@
+"0","squad_goals$Squad <-squad_goals$Squad"
+"0","squad_melt <- melt(squad_goals, id.vars = ""Squad"")"

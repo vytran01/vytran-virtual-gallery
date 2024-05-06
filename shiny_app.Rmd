@@ -1,0 +1,42 @@
+---
+title: "Confidence Level Shiny Project"
+description: |
+  Confidence Level is an important concept in Statistics, but it is not straightforward for many people . In this project, Paige Sandy and I utilized Shiny,  an open source R package for building interactive graphs, to create multiple data simulations to explain the concept of Confidence Levels in a more intuitive way for introductory Statistics students 
+---
+
+<h2>Data set</h2>
+
+The population is created using function <b>  `rnorm(n, mean = 100, sd = 4)`</b>  in which the population size `n` is set by the user by a slider. This function will create a vector of random numbers following a normal distribution.
+
+<h2> Variables</h2>
+
+
+Our app contains 3 main parts, each part contains different variables
+
+<h3>Repeated Sampling</h3>
+
+The sampling distribution of a statistic is a probability distribution based on a large number of samples of size from a given population. 
+
+In this section, we tried to explain this definition by allowing the user to modify the value of 3 variables: <b>sample size, number of samples, and confidence level.</b> Each time one of the inputs changes, the app will recreate a corresponding graph to help users visualize the effects of these variables on the sample statistic as well as the confidence interval.
+
+<h3> Interval Width </h3>
+
+In this section,  users can use sliders to change the value of <b>confidence interval and sample size.</b>  A visualization will be generated based on these inputs to help users verify the fact that "the higher the level of confidence, the wider the interval"
+
+<h3> Interval Accuracy </h3>
+
+In this section, users may change the value of 3 variables: <b>number of samples, sample size, and confidence interval. </b> 
+
+This simulation will help users verify the statement "If we were to compute many, many 100(1 − α)%
+confidence intervals for that many samples, then approximately 100(1 − α)% of those intervals will
+contain the population parameter"
+
+The generated visualization represents the calculated confidence interval corresponding to each sample. Each interval is colored in green (meaning that interval captures the true mean) or red (meaning that interval does not capture the true mean). Based on the number of red and greens lines, users may visualize the effects of each variable on the interval accuracy. 
+
+Through this interactive graph, we also help users distinguish 2 concepts: Probability and Confidence level
+
+- Probability: indicates whether or not an interval contains the population parameter. Probability is  either 0 (false, marked in red) or 1 (true, marked in green). There is no value in between.
+- Confidence level: tells how many percents of all confidence intervals contain the population parameter
+
+
+<iframe src="https://abby-flynt.shinyapps.io/Paige-Vy-SP24/" class="l-screen-inset shaded" height="1000px"></iframe>

@@ -1,0 +1,8 @@
+"0","df_with_goals <- df[df$Gls >= 1, ]"
+"0",""
+"0","# Group the data by team and player, and summarize to get the player with the most goals for each team"
+"0","top_players <- df_with_goals %>%"
+"0","  group_by(Team) %>%"
+"0","  slice(which.max(Gls)) %>%"
+"0","  ungroup()"
+"0",""

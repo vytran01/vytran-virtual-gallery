@@ -1,0 +1,67 @@
+---
+title: "ggridges plot"
+description: |
+  In exam 1, there was a problem in which we have to replicate a visualization using `ggridges`. This is a ggplot extension that allows us to arrange multiple density plots, creating an impression of mountain ranges. The visualizations created from this library look very novel and illustrative to view the behavior and quantiles of a distribution. 
+---
+<!--
+```{r}
+load("MATH230_Exam1_Data.RData")
+library(ggplot2)
+library(ggridges)
+library(stringr)
+```
+
+```{r}
+hsb2$gender = factor(hsb2$gender)
+hsb2$race = factor(hsb2$race)
+hsb2$ses = factor(hsb2$ses, labels = c("low", "middle", "high"), ordered = TRUE)
+total_score = hsb2$read + hsb2$write + hsb2$math + hsb2$science + hsb2$socst
+hsb2["total_score"] = total_score
+attach(hsb2)
+```
+
+-->
+
+<h2>Data set</h2>
+
+<b>hsb2</b> is a data set loaded from the file "MATH230_Exam1_Data.RData". This data set originally contains the responses of 200 students on 11 variables. However, after going through data processing, the data set includes an additional column called `total_score`
+
+<h2>Variables</h2>
+
+This visualization focuses on 2 variables: 
+
+<ul>
+  <li>total_score: int</li>
+  <li>race: factor</li>
+</ul>
+
+
+
+```{r}
+ggplot(hsb2, aes(x = total_score, y = race)) +
+  geom_density_ridges(
+    jittered_points = TRUE, quantile_lines = TRUE, scale = 0.69, alpha = 0.7,
+    vline_width = 1, vline_color = "purple3",
+    point_size = 1, point_alpha = 1,
+    position = position_raincloud(adjust_vlines = TRUE)
+  ) +
+  theme(axis.text.y = element_text(angle = 45, hjust = 1)) +
+  scale_y_discrete(labels = function(x) str_to_title(x)) +
+  xlab("Total standardized test score") +
+  ylab("Student's race") +
+  ggtitle("Comparing distributions of test scores by race")
+```
+
+<h2>Interpretation of the visualization</h2>
+
+- The x-axis represents the `total_score`, the y-axis represents `race`, which is a categorical variable containing 4 values: White, Hispanic, Asian, and Afria American
+- Each density ridge shows the distribution of total test score of all students with a specific race.
+- We can see the overall shape of each distribution. For example, the distribution of White and African American has a bell shape. The distribution of Hispanic is slightly skewed right. Meanwhile, the distribution of Asian contains 2 peaks at the 1st and 3rd quartiles.
+- Below each density plot, we see the dots representing all observations in the corresponding category and 3 vertical lines marking the 1st quartile, median, and 3rd quartile of the distribution.
+- We can realize that the number of white students is much higher than the number of other races
+- The median score of White and Asian students is around 270, while the median score of Hispanic and African American students is around 225
+- The quantiles of White and Asian distributions are pretty close together. The quantiles of Hispanic and Africa American distributions are also pretty similar.
+- There are some points in the African American plots that lie very far away from the center; however, the current graph is not sufficient to tell if they are outliers or not
+- The White distribution is likely to have a wide spread according to the visualization
+
+In general, `ggridges` gives us a descriptive visualization with a lot more information than the density plot, scatterplot, or boxplot alone. This is a big advantage of this library, making it one of my favorite tools that I have learnt in this course.

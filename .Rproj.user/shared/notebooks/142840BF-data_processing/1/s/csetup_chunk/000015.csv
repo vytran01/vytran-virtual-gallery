@@ -1,0 +1,17 @@
+"0","knitr::opts_chunk$set(echo = FALSE)"
+"0",""
+"0","devtools::install_github(""ricardo-bion/ggradar"", "
+"0","                          dependencies = TRUE)"
+"2","Skipping install of 'ggradar' from a github remote, the SHA1 (f99517ae) has not changed since last install.
+  Use `force = TRUE` to force installation
+"
+"0","download.file(""https://github.com/ricardo-bion/ggtech/blob/master/Circular%20Air-Light%203.46.45%20PM.ttf"", ""~/Circular Air-Light 3.46.45 PM.ttf"", method = ""curl"")"
+"2","  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     "
+"2","0"
+"2","  0     0    0     "
+"2","0    0     0      0      0 --:--:-- --:--:-- --:--:--     0"
+"2","100  147k    0  1"
+"2","47k    0     0   326k      0 --:--:-- --:--:-- --:--:--  329k
+"

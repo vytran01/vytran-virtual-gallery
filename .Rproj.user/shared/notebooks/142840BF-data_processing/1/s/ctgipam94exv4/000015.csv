@@ -1,0 +1,70 @@
+"0","attach(df)"
+"2","The following objects are masked from df (pos = 3):
+
+    Age, Dist, FK, G.Sh, G.SoT, G.xG, Gls, np.G.xG, npxG, npxG.Sh, PK, PKatt, Player, Pos, Sh, Sh.90, SoT,
+    SoT., SoT.90, Team, X90s, xG
+
+"
+"2","The following objects are masked from df (pos = 4):
+
+    Age, Dist, FK, G.Sh, G.SoT, G.xG, Gls, np.G.xG, npxG, npxG.Sh, PK, PKatt, Player, Pos, Sh, Sh.90, SoT,
+    SoT., SoT.90, Team, X90s, xG
+
+"
+"2","The following objects are masked from df (pos = 5):
+
+    Age, Dist, FK, G.Sh, G.SoT, G.xG, Gls, np.G.xG, npxG, npxG.Sh, PK, PKatt, Player, Pos, Sh, Sh.90, SoT,
+    SoT., SoT.90, Team, X90s, xG
+
+"
+"2","The following objects are masked from df (pos = 15):
+
+    Age, Dist, FK, G.Sh, G.SoT, G.xG, Gls, np.G.xG, npxG, npxG.Sh, PK, PKatt, Player, Pos, Sh, Sh.90, SoT,
+    SoT., SoT.90, Team, X90s, xG
+
+"
+"2","The following objects are masked from df (pos = 16):
+
+    Age, Dist, FK, G.Sh, G.SoT, G.xG, Gls, np.G.xG, npxG, npxG.Sh, PK, PKatt, Player, Pos, Sh, Sh.90, SoT,
+    SoT., SoT.90, Team, X90s, xG
+
+"
+"2","The following objects are masked from df (pos = 17):
+
+    Age, Dist, FK, G.Sh, G.SoT, G.xG, Gls, np.G.xG, npxG, npxG.Sh, PK, PKatt, Player, Pos, Sh, Sh.90, SoT,
+    SoT., SoT.90, X90s, xG
+
+"
+"2","The following objects are masked from df (pos = 18):
+
+    Age, Dist, FK, G.Sh, G.SoT, G.xG, Gls, np.G.xG, npxG, npxG.Sh, PK, PKatt, Player, Pos, Sh, Sh.90, SoT,
+    SoT., SoT.90, Team, X90s, xG
+
+"
+"2","The following objects are masked from df (pos = 19):
+
+    Age, Dist, FK, G.Sh, G.SoT, G.xG, Gls, np.G.xG, npxG, npxG.Sh, PK, PKatt, Player, Pos, Sh, Sh.90, SoT,
+    SoT., SoT.90, X90s, xG
+
+"
+"2","The following objects are masked from df (pos = 33):
+
+    Age, Dist, FK, G.Sh, G.SoT, G.xG, Gls, np.G.xG, npxG, npxG.Sh, PK, PKatt, Player, Pos, Sh, Sh.90, SoT,
+    SoT., SoT.90, Team, X90s, xG
+
+"
+"0","df_three_teams = df[Team == 'Sheffield Utd' |"
+"0","                      Team == 'Manchester Utd' | Team == 'Arsenal', ]"
+"0",""
+"0","ggplot(df_three_teams, aes(SoT, Gls, colour = Team)) +"
+"0","  geom_point() +"
+"0","  geom_xsideboxplot(aes(y = Team), orientation = ""y"") +"
+"0","  geom_ysidedensity(aes(x = after_stat(density)), position = ""stack"") +"
+"0","  geom_smooth(method = ""lm"", se = FALSE) +"
+"0","  theme(ggside.panel.scale = .3) +"
+"0","  scale_xsidey_discrete() +"
+"0","  scale_ysidex_continuous(guide = guide_axis(angle = 90), minor_breaks = NULL) +"
+"0","  labs(x = ""Shots on Target"", "
+"0","       y = ""Goals Scored"", "
+"0","       title = ""Ggside Plot showing Shots on Target vs Goals Scored for 3 Selected Teams"")"
+"0",""

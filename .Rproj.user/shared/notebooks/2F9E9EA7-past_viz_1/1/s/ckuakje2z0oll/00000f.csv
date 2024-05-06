@@ -1,0 +1,4 @@
+"0","ggplot(survey, aes(x = Pulse, y = Height, color = Smoke, shape = Exer)) + "
+"0","  geom_point(size = 2.5) + "
+"0","  scale_color_manual(values = wes_palette(""FantasticFox1"")[2:6]) + "
+"0","  labs(color = ""Smoking Frequency"", shape = ""Exercise Frequency"")"

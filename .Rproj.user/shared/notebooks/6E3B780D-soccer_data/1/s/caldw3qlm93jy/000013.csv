@@ -1,0 +1,6 @@
+"0","ggplot(squad_data) + "
+"0","    geom_bar( aes(x=Squad, y=PKmiss) ,"
+"0","              stat = ""identity"", "
+"0","              fill='skyblue') +"
+"0","    labs(x = ""Squad"", y = ""Missing penalty kicks"", title = ""Number of Missing Penalty Kicks by Team"") +"
+"0","    theme(axis.text.x = element_text(angle = 45, hjust = 1))"

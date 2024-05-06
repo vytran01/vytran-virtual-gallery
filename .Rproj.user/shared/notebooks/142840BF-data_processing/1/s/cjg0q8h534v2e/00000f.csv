@@ -1,0 +1,2 @@
+"0","# Filter the dataframe to include only players who contribute at least 1 goal for each team"
+"0","df_with_goals <- df[Gls >= 1, ]"

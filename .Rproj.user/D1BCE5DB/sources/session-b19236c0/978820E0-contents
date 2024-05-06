@@ -1,0 +1,455 @@
+---
+title: "Soccer Data"
+description: |
+ One of the 
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+
+devtools::install_github("ricardo-bion/ggradar", 
+                          dependencies = TRUE)
+download.file("https://github.com/ricardo-bion/ggtech/blob/master/Circular%20Air-Light%203.46.45%20PM.ttf", "~/Circular Air-Light 3.46.45 PM.ttf", method = "curl")
+
+```
+
+```{r}
+library(dplyr)
+library(ggplot2)
+library(ggwordcloud)
+library(ggcorrplot)
+library(reshape2)
+library(shiny)
+library(gridExtra) 
+library(scales)
+library(ggrepel)
+library(ggradar)
+library(magrittr)
+library(dplyr)
+library(ggside)
+library(gghalves)
+library("ggExtra")
+library(plotly)
+library(ggpie)
+
+```
+
+
+```{r}
+org_data = read.csv("player_shooting_2023_2024.csv", header = TRUE)
+
+# remove undefined rows
+df = org_data[!is.na(org_data$Age), ]
+attach(df)
+
+# convert char into factor type
+df <- mutate_if(df, is.character, as.factor)
+# remove unwanted columns
+df <- subset(df, select = -c(X, Rk, Nation, Born, Matches, Birth.Month))
+# rename some columns
+names(df)[names(df) == "Squad"] <- "Team"
+```
+
+# Total goals of each team
+
+First, we wil take a look at the total number of goals each team has scored so far this season
+
+
+```{r}
+plot_ly(
+  df_team,
+  x = ~ Team,
+  y = ~ Gls,
+  type = 'bar',
+  text = ~ paste('Team: ', Team, '<br>Goals: ', Gls, '<br>Penalties: ', PK, '<br>Free kicks: ', FK),
+  textposition = "none",
+  hoverinfo = 'text',
+  marker = list(
+    color = 'rgb(158,202,225)',
+    line = list(color = 'rgb(8,48,107)',
+                width = 1.5)
+  )
+) %>%
+
+  layout(title = 'Total goals of 20 Teams in EPL season 2023/24',
+         xaxis = list(title = 'Team'),
+         yaxis = list(title = 'Number of Goals'))
+```
+
+
+**Interpretations**:
+
+- Arsenal, Manchester City, and Liverpool are taking the lead in the total number of goals scored with 71, 70, and 68 goals, respectively
+- Sheffield Utd, Burnley, and Everton are 3 teams with the fewest goals
+- This season has experienced a noticeable discrepancy in the total goals between teams
+- The goal rankings reflects pretty precisely the current standing of these teams. More specifically, at the top of the table are Arsenal, Manchester City, and Liverpool and at the bottom of the table are Luton Town, Burnley, and Sheffield Utd.
+
+
+# What makes a good team?
+
+### Not depend on certain players
+
+It's often advised that a team shouldn't rely too much on just one player's scoring ability. It's better for a team to have several players who can chip in with goals. That way, if the top goal scorers get injured, the team's performance won't suffer as much.
+
+For each team, we will examine how many percents of the total goals coming from the top 5 goal scorers versus the remaining players
+
+```{r}
+# Filter the dataframe to include only players who contribute at least 1 goal for each team
+df_with_goals <- df[Gls >= 1, ]
+```
+
+
+
+
+```{r}
+library(ggplot2)
+
+# Group the data by team and player, and count the number of goals each player contributes to each team
+goals_contribution <- aggregate(Gls ~ Team + Player, data = df_with_goals, FUN = sum)
+goals_contribution <- goals_contribution[order(goals_contribution$Team, -goals_contribution$Gls), ]
+
+plot_list <- list()
+
+# Create a pie chart for each team
+for(team in unique(goals_contribution$Team)) {
+  # Subset the data for the current team
+  team_data <- subset(goals_contribution, Team == team)
+  top_players <- head(team_data, 5)
+  other_goals <- sum(team_data$Gls) - sum(top_players$Gls)
+  other_data <- data.frame(Team = team, Player = "Other", Gls = other_goals)
+  
+  pie_data <- rbind(top_players, other_data)
+  
+  # Create the pie chart
+  pie_chart <- ggplot(pie_data, aes(x = "", y = Gls, fill = Player)) +
+    geom_bar(stat = "identity") +
+    geom_text(aes(label = paste0(round((Gls / sum(pie_data$Gls)) * 100), "%")),
+              position = position_stack(vjust = 0.5), size = 4) + 
+    coord_polar("y", start = 0) +
+    labs(fill = "Player") +
+    ggtitle(paste("Goal contribution of", team, "players")) +
+    theme_void()
+  
+  plot_list[[team]] <- pie_chart
+}
+
+```
+
+```{r}
+
+grid.arrange(plot_list[[1]], plot_list[[13]], ncol=2)
+grid.arrange(plot_list[[14]], plot_list[[17]], ncol=2)
+```
+
+
+
+### The "star" factor of a team
+
+Having a team with diverse players who can all contribute to scoring goals is crucial. However, what really makes a team shine is having one or two standout players who consistently score more goals than the rest. These are the stars of the team, and they can make a difference in a match. If goals are too evenly distributed among the players, it suggests that the team lacks a reliable go-to scorer, which isn't ideal.
+
+After considering the whole data set, I decided that the top goal scorers (or star players) of the tournament should be those who have scored at least 8 goals. Then I will count the number of star players each team has and create a word cloud based on this data. A team with more star players will have a bigger name on the map and a deeper color
+
+```{r}
+df_star_players = df[Gls >= 8, ]
+star_players_table <- table(df_star_players$Team)
+star_players_by_team <- as.data.frame(star_players_table)
+names(star_players_by_team)[1] <- "Team"
+names(star_players_by_team)[2] <- "NumPlayers"
+
+star_players_by_team <- subset(star_players_by_team, NumPlayers > 0)
+
+ggplot(star_players_by_team,
+       aes(
+         label = Team,
+         size = NumPlayers,
+         color = NumPlayers
+       )) +
+  geom_text_wordcloud() +
+  
+  scale_size_area(max_size = 8)  +
+  theme_minimal() +
+  scale_color_gradient(low = "powderblue", high = "darkblue") +
+  labs(title = "Wordcloud illustrating how many star players each team contains")
+```
+
+**Interpretation**: 
+
+- Liverpool is the team that contains the most star players of the tournament (although my definition of a star player might not cover all aspects), followed by Manchester City, Arsenal, and Aston Villa
+- According to the previous pie chart, Manchester Utd is the team  with the most evenly distributed goals; however, it doesn't have any real stars in the team (each of its top 5 goal scorers only contribute to about 17% of the total goals). This explains why Manchester Utd doesn't have a reliable lead goal scorer, and their manager couldn't find out a stable squad. Consequently, Manchester United currently sits at the 11th position out of 20 teams in terms of goals scored.
+- On the other hand, Manchester City has a desired squad with 2 lead scorers contributing 46% and 36% of the total goals, respectively. Moreover, the remaining players outside the top five contribute 39% of the total goals. This indicates that Manchester City maintains a robust squad, even in the event of injuries to their star players. This partly explains their 2nd place in terms of Total goals and 1st place in the overall standings.
+
+
+```{r}
+df_with_goals <- df[df$Gls >= 1, ]
+
+# Group the data by team and player, and summarize to get the player with the most goals for each team
+top_players <- df_with_goals %>%
+  group_by(Team) %>%
+  slice(which.max(Gls)) %>%
+  ungroup()
+
+```
+
+
+
+Let's now generate a ggradar plot to analyze and compare the performances of the top goal scorers from three different teams. We'll focus on various metrics including Sh (Shots), SoT (Shots on Target), SoT. (Shot Accuracy Percentage),xG (Expected Goals), and npxG (Non-penalty Expected Goals). The selected players for comparison are Erling Haaland (with 19 goals, representing Manchester City), Bryan Mbeumo (with 8 goals, representing Brentford), and Zeki Amdouni (with 4 goals, representing Burnley). These players are chosen to represent teams positioned 2nd, 12th, and 19th respectively in the goals ranking. Thus, this visualization not only evaluates the individual performances of these players but also offers insights into their team's overall performance.
+
+
+
+```{r}
+top_players = top_players %>% arrange(Gls)
+
+ggradar(top_players[c(1,6,20),c(1,7,8,9,18,19)],
+        grid.min = 0,
+        grid.mid=0.75,
+        grid.max = 1.5, 
+        plot.title = "Attacking metrics of \nthe top goal scorers\n from 3 teams",
+        base.size= 1,
+        font.radar = "mono",
+        group.point.size = 2,
+        )
+```
+
+**Interpretations:**
+
+- Apart from **SoT.**, the remaining 4 variables are consistent to the Number of Goals of these players. More specifically, 4 vertices representing Sh, SoT, xG, and npxG of the yellow polygons are furthest from the center, followed by the green polygons, then the purple polygons. This order is consistent to the goals ranking of these 3 players as well as the team that they represent.
+- I'm quite surprised that **SoT** (Shot Accuracy Percentage) does not reflect the number of goals scored. Indeed, as I investigate the relationship between SoT and Goals in the whole data set, I realize that players with high shot accuracy are those with the lowest number of goals. This is because the accuracy tends to decrease as a player attempts more shots.
+
+
+
+### Different Kinds of Goals
+
+In soccer, goals can be categorized into three types: those scored from penalty kicks, those from free kicks, and the rest. While penalty and free-kick goals usually occur less frequently than the third type, their occurrence shouldn't be significantly lower compared to regular goals. This adds flexibility to the team and provides more ways (or tactics) for scoring goals, particularly when up against a team with a solid defensive strategy
+
+To examine if a team has a flexible attacking strategy, we will take a look at the distribution of goal types for each team
+
+
+```{r}
+# total goals by team
+goals_by_team <- aggregate(Gls ~ Team, df, sum, na.rm = TRUE)
+# penalty goals by team
+pk_by_team <- aggregate(PK ~ Team, df, sum, na.rm = TRUE)
+# free kick goals by team
+fk_by_team <- aggregate(FK ~ Team, df, sum, na.rm = TRUE)
+
+df_team <- merge(goals_by_team, pk_by_team, by = "Team", all = TRUE)
+df_team <- merge(df_team, fk_by_team, by = "Team", all = TRUE)
+df_team['OtherGls'] = df_team['Gls'] - df_team['PK'] - df_team['FK']
+
+goal_types <- df_team[, c("Team", "PK", "FK", "OtherGls")]
+
+df_melt <- melt(goal_types, id.vars = "Team")
+ggplot(df_melt, aes(Team, value, fill = variable)) +
+  geom_bar(position = "fill", stat = "identity") +
+  scale_y_continuous(labels = percent) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(x = "Team", y = "Percentage of Goals", title = "Distribution of Goal Types Across Teams")
+```
+
+**Interpretation:**
+
+- Among the top three teams with the highest number of goals scored (Arsenal, Manchester City, and Liverpool), it's surprising to note that Arsenal has an exceptionally low percentage of goals from penalty kicks and free kicks. From a strategic standpoint, I believe the balanced distribution seen in Manchester City and Liverpool is more advantageous in the long term. This is because scoring from penalty kicks and free kicks conserves a significant amount of energy, which is crucial during the intense phases of the season.
+- I think this difference of the 3 leading teams is very interesting. Manchester City and Liverpool are renowned and experienced teams in the EPL, who has won the cup many times in the past 6 years. Meanwhile, Arsenal is recognized for its attractive attacking style but has often lacked strategic depth, causing it to miss many trophies in the past. Therefore, it is understandable why Manchester City and Liverpool opt for a more pragmatic and effective approach.
+
+
+
+# Which factors have the strongest correlation to the Number of Goals?
+
+```{r}
+df_numeric <- na.omit(df[sapply(df, is.numeric)])
+
+corr = cor(df_numeric)
+ggcorrplot(
+  corr,
+  hc.order = TRUE,
+  #type = "upper",
+  colors = c("navyblue", "white", "red"),
+  outline.color = "black",
+  ggtheme = ggplot2::theme_minimal(),
+) +
+  labs(title = "Correlation Matrix of Numeric Variables")
+
+```
+
+**Interpretation:**
+
+Looking at the color of the matrix, we see that the variables having the strongest correlation with Goals are:
+
+- Sh (Number of shots)
+- SoT (Number of shots on target)
+- xG (Expected goals)
+- npxG (Non-penalty expected goals)
+
+These variables have a strong linear relationship with the number of goals that a player scored, which, in turns, are likely to have a strong correlation to the total number of goals of the whole team. Therefore, to study the scoring ability of a team, we will focus on these variables.
+
+
+## Shot and Shot on Target
+
+### For each individual players
+
+First, I choose to study 3 teams Sheffield Utd, Manchester Utd, and Arsenal, whose goals are characterized as low, medium, and high in the tournament ranking
+
+Let's explore the relationship between the number of shots on target and number of goals for each player in these 3 teams
+
+```{r}
+attach(df)
+df_three_teams = df[Team == 'Sheffield Utd' |
+                      Team == 'Manchester Utd' | Team == 'Arsenal', ]
+
+ggplot(df_three_teams, aes(SoT, Gls, colour = Team)) +
+  geom_point() +
+  geom_xsideboxplot(aes(y = Team), orientation = "y") +
+  geom_ysidedensity(aes(x = after_stat(density)), position = "stack") +
+  geom_smooth(method = "lm", se = FALSE) +
+  theme(ggside.panel.scale = .3) +
+  scale_xsidey_discrete() +
+  scale_ysidex_continuous(guide = guide_axis(angle = 90), minor_breaks = NULL) +
+  labs(x = "Shots on Target", 
+       y = "Goals Scored", 
+       title = "Ggside Plot showing Shots on Target vs Goals Scored for 3 Selected Teams")
+
+```
+
+**Interpretations:**
+
+The position of the points and the lines of best fit both suggest a positive linear relationship between Shots on Target and Goals Scored. Looking at the boxplot, we realize that Arsenal's distribution has significantly higher quartiles than the distribution of the other 2 teams. This is consistent to the density plot on the right, which indicates that Arsenal players scored the most goals, followed by Manchester Utd players, then Sheffield Utd players.
+
+
+
+### For the whole team
+
+Next, I will accumulate the number of goals, shots, and shots on target of all players in each team to examine the relationship of these 3 variables
+
+```{r}
+Sh_team = aggregate(Sh ~ Team, df, sum, na.rm = TRUE)
+SoT_team = aggregate(SoT ~ Team, df, sum, na.rm = TRUE)
+
+df_team <- merge(df_team, Sh_team, by = "Team", all = TRUE)
+df_team <- merge(df_team, SoT_team, by = "Team", all = TRUE)
+```
+
+
+```{r}
+ggplot(df_team, aes(x = SoT, y = Gls, fill = Sh, label = Team)) +
+  geom_point(shape = 21, color = "black", size = 3) + 
+  geom_smooth(method = "lm", se = FALSE) +  
+  geom_text_repel(aes(label = Team), size = 3) +
+  labs(x = "Shots on Target", 
+       y = "Goals",
+       title = "Scatterplot of Shots on Target vs Total Goals for 20 Teams") +  
+  theme_minimal() +
+  scale_fill_continuous(name = "Number of Shots")
+```
+
+
+
+
+**Interpretation:**
+
+There is a strong positive linear relationship between Shot on Target and Goals (indicated by the line of best fit) as well as between Shots and Goals (indicated by the fact that higher points have lighter blue color)
+
+
+```{r}
+# Calculate quartiles
+quartiles <- quantile(df_team$Gls, probs = c(0.25, 0.5, 0.75))
+
+# Define labels for the categories
+labels <- c("very low", "low", "medium", "high")
+
+# Create a new column 'goals_level' based on quartiles
+df_team$goals_level <- cut(df_team$Gls,
+                            breaks = c(-Inf, quartiles, Inf),
+                            labels = labels,
+                            right = FALSE)
+
+
+```
+
+
+
+
+## Expected Goals and Non-penalty Expected Goals
+
+- Expected Goals (xG) is a metric designed to measure the probability of a shot resulting in a goal 
+- Expected Goals (xG) is a metric designed to measure the probability of a shot that is not a penalty kick resulting in a goal 
+
+
+```{r}
+ggplot(df, aes(x = xG, y = Gls, fill = npxG)) +
+  geom_point(shape = 21, color = "black", size = 2) + 
+  geom_smooth(method = "lm", se = FALSE) +  
+  labs(x = "Expected Goals", 
+       y = "Goals",
+       title = "Scatterplot of Expected Goals vs Goals for all players in the EPL") +  
+  scale_fill_gradient(name = "Non-penalty Expected Goals", low = "blue", high = "red") +  
+  theme_minimal()  
+```
+
+**Interpretation**: 
+
+Both Expected Goals and Non-penalty Expected Goals have a strong positive correlation to Goals scored
+
+
+
+```{r}
+piris <- ggplot(df_three_teams, aes(npxG, Gls, colour = Team)) +
+  geom_point() +
+  labs(x = "Non-penalty Expected Goals (npxG)",
+       y = "Goals Scored",
+       title = "ggMarginal plots showing penalty Expected Goals \nvs Goals Scored for 3 Selected Teams")
+
+ggMarginal(piris, groupColour = TRUE, groupFill = TRUE) 
+  
+```
+**Interpretation**
+
+The density plots of npxG implies that Arsenal players are more likely to have higher non-penalty expected goals, which is consistent to the density plots of Goals (on the right hand side). In general, non-penalty expected goals are correlated to the number of goals scored. This is because the majority of goals come from non-penalty goals; therefore, a players who have more shots that are likely to result in a goal will have more goals in total.
+
+
+
+# Scoring efficiency of a team
+
+To determine the efficiency of a team, we will take a look at the difference between Actual Goals and Expected Goals. If a team has more goals than its total xG probably, then it is likely that the players of that teams have an above average shooting/finishing ability. On the other hand, a negative goal difference might indicate a team has experienced poor luck or has below average finishing ability.
+
+```{r}
+library(plotly)
+
+# Aggregate data
+g_xg_team <- aggregate(G.xG ~ Team, df, sum, na.rm = TRUE)
+
+# Create bar chart
+p <- ggplot(g_xg_team) + 
+  geom_col(aes(x = Team, y = G.xG, fill = Team)) +
+  geom_text(aes(x = Team, y = G.xG, label = round(G.xG, 2)), vjust = 0) +
+  ggtitle('The difference between the Actual Goals and Expected Goals for Each Team') + 
+  theme_bw() +
+  theme(legend.position = 'none',
+        axis.text.x = element_text(angle = 45, hjust = 1))
+
+# Convert ggplot to plotly
+p <- ggplotly(p, tooltip = c("Team", "G.xG"))
+
+# Set y-axis label
+p <- layout(p, yaxis = list(title = "Actual Goals - Expected Goals"))
+
+p
+
+```
+
+**Interpretation**
+
+* According to this graph, Arsenal, Aston Villa and Manchester City are top three teams that capitalized on their chances most effectively. It's not surprising that Arsenal and Manchester City secured the 1st and 2nd positions, respectively, in terms of goals scored in the EPL.
+* Everton and Brentford are the least proficient at converting chances into goals.
+
+
+
+
+
+
+
+
+
+
+
+
+

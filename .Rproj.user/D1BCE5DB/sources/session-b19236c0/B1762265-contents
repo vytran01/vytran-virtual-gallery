@@ -1,0 +1,86 @@
+---
+title: "Generative Art Work"
+description: |
+ One of the most interesting and creative activities in this course is making Generative Art, which is created by an autonomous system using algorithms and mathematical patterns.
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+### Art work 1: Using `canvas_recaman()`
+
+My first art work is generated using the Recaman's sequence. My idea was to create an image with the vibe of summer and the beach, so I chose a sky blue palette and incorporated a pattern simulating palm trees
+
+![A generative artwork using canvas_recaman()](gen_art/artwork1.png)
+
+<!--
+```{}
+# Art work #1: using `canvas_recaman`
+
+artwork1 <- canvas_recaman(
+  colors = colorPalette("sky"),
+  background = "#e3fbfc",
+  iterations = 800,
+  start = 0,
+  increment = 2,
+  curvature = 30,
+  angle = 45,
+  size = 0.5,
+  closed = TRUE
+)
+
+saveCanvas(artwork1, filename = "artwork1.png")
+```
+-->
+
+### Art work 2: Using `canvas_function()`
+
+My second art work is made from a trigonometric function. By selecting a dark palette with symmetrical sine and cosine patterns, I tried to replicate a mysterious crystal ball
+
+![A generative artwork using canvas_function()](gen_art/artwork2.png)
+
+<!--
+```{}
+# Art work #2: using `canvas_function`
+
+formula <- list(
+  x = quote(sin(x_i^3 - y_i^3)),
+  y = quote(cos(x_i^2 + y_i^2))
+)
+
+artwork2 <- canvas_function(
+  colors = colorPalette("dark3"),
+  background = "black",
+  by = 0.01,
+  polar = TRUE,
+  formula = formula
+)
+
+saveCanvas(artwork2, filename = "artwork2.png")
+```
+-->
+
+### Art work 3: Using `canvas_flow()`
+
+My last art work is created from the canvas_flow() function, which uses algorithms to determine the path in which certain points flow through a screen/surface. The curves are colored with the typical Bucknell's orange and blue.
+
+![A Bucknell themed generative artwork using canvas_flow()](gen_art/bucknell.png)
+
+<!--
+```{}
+# Art work #3 - Bucknell themed: using `canvas_flow`
+
+bucknell <- canvas_flow(
+  colors = c("#E87722", "#003865"),
+  background = "#fafafa",
+  lines = 3000,
+  lwd = 0.05,
+  iterations = 300,
+  stepmax = 0.01,
+  outline = "circle",
+)
+
+saveCanvas(bucknell, filename = "bucknell.png")
+```
+-->

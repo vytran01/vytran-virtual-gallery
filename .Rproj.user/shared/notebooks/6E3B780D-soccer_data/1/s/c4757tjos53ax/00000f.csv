@@ -1,0 +1,2 @@
+"0","# convert char into factor type"
+"0","data <- mutate_if(data, is.character, as.factor)"

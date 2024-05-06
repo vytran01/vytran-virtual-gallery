@@ -1,0 +1,7 @@
+"0","ggplot(nation_count) + "
+"0","  geom_bar(aes(y = Nation, x = Freq),  # Switch x and y variables"
+"0","           stat = ""identity"", "
+"0","           fill = 'skyblue', "
+"0","           width = 0.8) +  # Adjust the width to increase the space between rows"
+"0","  labs(x = ""Goals"", y = ""Squad"") +"
+"0","  theme(axis.text.y = element_text(angle = 0, hjust = 1)) "

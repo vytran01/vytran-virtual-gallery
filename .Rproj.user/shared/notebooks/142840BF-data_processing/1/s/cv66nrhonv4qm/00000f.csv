@@ -1,0 +1,5 @@
+"0","Sh_team = aggregate(Sh ~ Team, df, sum, na.rm = TRUE)"
+"0","SoT_team = aggregate(SoT ~ Team, df, sum, na.rm = TRUE)"
+"0",""
+"0","df_team <- merge(df_team, Sh_team, by = ""Team"", all = TRUE)"
+"0","df_team <- merge(df_team, SoT_team, by = ""Team"", all = TRUE)"

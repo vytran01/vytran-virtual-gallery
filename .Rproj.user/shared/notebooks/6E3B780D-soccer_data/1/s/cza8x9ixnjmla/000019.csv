@@ -1,0 +1,6 @@
+"0","library(scales)"
+"0"," ggplot(squad_melt, aes(Squad, value, fill = variable)) +"
+"0","    geom_bar(position = ""fill"", stat = ""identity"") +"
+"0","    scale_y_continuous(labels = percent)+"
+"0","    theme(axis.text.x = element_text(angle = 45, hjust = 1))"
+"0",""

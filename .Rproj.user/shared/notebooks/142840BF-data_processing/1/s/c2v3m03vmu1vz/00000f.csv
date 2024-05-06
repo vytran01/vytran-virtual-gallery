@@ -1,0 +1,8 @@
+"0","ggplot(df, aes(x = xG, y = Gls, fill = npxG)) +"
+"0","  geom_point(shape = 21, color = ""black"", size = 2) + "
+"0","  geom_smooth(method = ""lm"", se = FALSE) +  "
+"0","  labs(x = ""Expected Goals"", "
+"0","       y = ""Goals"","
+"0","       title = ""Scatterplot of Expected Goals vs Goals for all players in the EPL"") +  "
+"0","  scale_fill_gradient(name = ""Non-penalty Expected Goals"", low = ""blue"", high = ""red"") +  "
+"0","  theme_minimal()  "
