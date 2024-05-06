@@ -1,3 +1,0 @@
-"0","# total goals by position"
-"0","goals_by_pos <- aggregate(Gls ~ Pos, data, sum, na.rm = TRUE)"
-"0","goals_by_pos"

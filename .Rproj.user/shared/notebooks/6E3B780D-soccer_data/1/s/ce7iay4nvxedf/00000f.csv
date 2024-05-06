@@ -1,4 +1,0 @@
-"0","org_data = read.csv(""player_shooting_2023_2024.csv"", header = TRUE)"
-"0",""
-"0","# remove undefined rows"
-"0","data =org_data[!is.na(org_data$Age), ]"

@@ -1,6 +1,0 @@
-"0","ggplot(squad_data) + "
-"0","    geom_bar( aes(x=Squad, y= PK) ,"
-"0","              stat = ""identity"", "
-"0","              fill='skyblue') +"
-"0","    labs(x = ""Squad"", y = ""Goals"", title = ""Number of Penalty Goals by Team"") +"
-"0","    theme(axis.text.x = element_text(angle = 45, hjust = 1))"
